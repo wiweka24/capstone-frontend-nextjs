@@ -1,6 +1,6 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: "https://capstone-backend-expressjs.vercel.app/",
+  baseURL: process.env.NEXT_PUBLIC_BE_URI,
   // withCredentials: true,
 });

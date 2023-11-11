@@ -9,11 +9,10 @@ import TrashBin from "@/components/trash-bin";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import LineChart from "@/components/line-chart";
-import BarChart from "@/components/bar-chart";
 import AreaChart from "@/components/area-chart";
 import { axiosInstance } from "@/utils/config";
 import format from "date-fns/format";
-import idLocale from 'date-fns/locale/id';
+import idLocale from "date-fns/locale/id";
 
 // Register ChartJS components using ChartJS.register
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -122,7 +121,9 @@ export default function Home() {
   }
 
   function formattedDateTime(timestamp) {
-    const formattedDate = format(new Date(timestamp), 'dd MMMM yyyy HH:mm', { locale: idLocale });
+    const formattedDate = format(new Date(timestamp), "dd MMMM yyyy HH:mm", {
+      locale: idLocale,
+    });
     return formattedDate;
   }
   // const formattedDateTime = new Date(item.timestamp).toLocaleString()
@@ -153,7 +154,9 @@ export default function Home() {
                     {notifData?.map((item) => (
                       <div className="flex flex-col gap-1 text-black text-right">
                         <p className="text-sm font-semibold">{item.text}</p>
-                        <p className="text-xs text-red-800 font-light">{formattedDateTime(item.timestamp)}</p>
+                        <p className="text-xs text-red-800 font-light">
+                          {formattedDateTime(item.timestamp)}
+                        </p>
                       </div>
                     ))}
                   </div>
