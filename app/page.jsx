@@ -151,8 +151,8 @@ export default function Home() {
               {notifState ? (
                 <div className="absolute z-50 w-96 border rounded-lg right-0 mt-4 bg-white">
                   <div className="flex flex-col gap-2 p-4">
-                    {notifData?.map((item) => (
-                      <div className="flex flex-col gap-1 text-black text-right">
+                    {notifData?.map((index, item) => (
+                      <div key={index} className="flex flex-col gap-1 text-black text-right">
                         <p className="text-sm font-semibold">{item.text}</p>
                         <p className="text-xs text-red-800 font-light">
                           {formattedDateTime(item.timestamp)}
