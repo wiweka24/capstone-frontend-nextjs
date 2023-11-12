@@ -126,7 +126,6 @@ export default function Home() {
     });
     return formattedDate;
   }
-  // const formattedDateTime = new Date(item.timestamp).toLocaleString()
 
   return (
     <main className="min-h-screen bg-neutral-200">
@@ -151,7 +150,7 @@ export default function Home() {
               {notifState ? (
                 <div className="absolute z-50 w-96 border rounded-lg right-0 mt-4 bg-white">
                   <div className="flex flex-col gap-2 p-4">
-                    {notifData?.map((index, item) => (
+                    {notifData?.map((item, index) => (
                       <div key={index} className="flex flex-col gap-1 text-black text-right">
                         <p className="text-sm font-semibold">{item.text}</p>
                         <p className="text-xs text-red-800 font-light">
