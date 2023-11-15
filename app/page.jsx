@@ -76,9 +76,7 @@ export default function Home() {
         const notifDataRes = notifData.data;
 
         setLocation(binDataRes.location);
-        calculateTrashCount(
-          binDataRes.organicData.map((item) => item.timestamp)
-        );
+        calculateTrashCount(binDataRes.organicData);
 
         setTrashData(trashDataRes);
         setCurrentData(trashDataRes.organicData);
@@ -107,17 +105,23 @@ export default function Home() {
     return digit;
   }
 
-  function calculateTrashCount(timestampStrings) {
-    const currentTime = new Date();
-    const oneHourAgo = new Date(currentTime - 60 * 60 * 1000);
-    const timestamps = timestampStrings.map(
-      (timestampString) => new Date(timestampString)
-    );
-    const timestampsWithinLastHour = timestamps.filter(
-      (timestamp) => timestamp >= oneHourAgo
-    );
-    const count = timestampsWithinLastHour.length;
-    setTrashCount(count);
+  function calculateTrashCount(trashData) {
+    const currentTime = new Date(); // Current time
+  
+    // Filter the trash data for the last hour
+    const lastHourTrashData = trashData.filter(data => {
+      const dataTime = new Date(data.timestamp);
+      const timeDifference = currentTime - dataTime;
+      return timeDifference <= 3600000 && timeDifference >= 0; // Within the last hour and in the past
+    });
+  
+    // Calculate the total trash count for the last hour
+    let totalTrashCount = 0;
+    for (const data of lastHourTrashData) {
+      totalTrashCount += data.numberOfTrash;
+    }
+  
+    setTrashCount(totalTrashCount);
   }
 
   function formattedDateTime(timestamp) {
