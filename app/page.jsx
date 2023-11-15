@@ -21,7 +21,7 @@ export default function Home() {
   const binName = "bin-1-teti";
   const [location, setLocation] = useState("lokasi");
   const [temp, setTemp] = useState(0);
-  const [trashCount, setTrashCount] = useState(35);
+  const [trashCount, setTrashCount] = useState(0);
   const [trashData, setTrashData] = useState({});
   const [currentData, setCurrentData] = useState([]);
   const [currentColor, setCurrentColor] = useState("#006CC2");
@@ -114,11 +114,13 @@ export default function Home() {
       const timeDifference = currentTime - dataTime;
       return timeDifference <= 3600000 && timeDifference >= 0; // Within the last hour and in the past
     });
-  
+    
     // Calculate the total trash count for the last hour
     let totalTrashCount = 0;
     for (const data of lastHourTrashData) {
-      totalTrashCount += data.numberOfTrash;
+      if (!isNaN(data.numberOfTrash)) {
+        totalTrashCount += data.numberOfTrash;
+      }
     }
   
     setTrashCount(totalTrashCount);
