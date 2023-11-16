@@ -22,7 +22,7 @@ ChartJS.register(
   Legend
 );
 
-export default function LineChart({ sensorData, color }) {
+export default function LineChart({ sensorData, color, dataset }) {
   const options = {
     responsive: true,
     plugins: {
@@ -57,7 +57,7 @@ export default function LineChart({ sensorData, color }) {
     labels,
     datasets: [
       {
-        label: "Dataset 1",
+        label: `Data Sampah ${dataset}`,
         data: sensorData?.map((item) => item.level),
         backgroundColor: color,
       },

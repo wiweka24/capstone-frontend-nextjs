@@ -24,7 +24,7 @@ ChartJS.register(
   Legend
 );
 
-export default function AreaChart({ sensorData }) {
+export default function AreaChart({ sensorData, dataset }) {
   const options = {
     responsive: true,
     plugins: {
@@ -50,7 +50,7 @@ export default function AreaChart({ sensorData }) {
     datasets: [
       {
         fill: true,
-        label: "Dataset 2",
+        label: `Data sampah ${dataset}`,
         data: sensorData?.map((item) => item.temp),
         borderColor: "#006CC2",
         backgroundColor: "#94D2FF",

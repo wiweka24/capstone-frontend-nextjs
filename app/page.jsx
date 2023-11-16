@@ -1,20 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Image from "next/image";
+import { useState, useEffect } from "react";
+
 import fillBlue from "@/public/fill-blue.svg";
 import fillRed from "@/public/fill-red.svg";
 import fillOrange from "@/public/fill-orange.svg";
 import loading from "@/public/loading.gif";
-import { IoIosNotifications, IoMdSettings, IoIosRefresh } from "react-icons/io";
 import TrashBin from "@/components/trash-bin";
+import { axiosInstance } from "@/utils/config";
+
+import format from "date-fns/format";
+import idLocale from "date-fns/locale/id";
+import { IoIosNotifications, IoMdSettings, IoIosRefresh } from "react-icons/io";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import LineChart from "@/components/line-chart";
 import AreaChart from "@/components/area-chart";
-import { axiosInstance } from "@/utils/config";
-import format from "date-fns/format";
-import idLocale from "date-fns/locale/id";
 
 // Register ChartJS components using ChartJS.register
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -22,11 +24,14 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 export default function Home() {
   const binName = "bin-1-teti";
   const [location, setLocation] = useState("lokasi");
+
   const [temp, setTemp] = useState(0);
+  const [humid, setHumid] = useState(0);
   const [trashCount, setTrashCount] = useState(0);
   const [trashData, setTrashData] = useState({});
   const [currentData, setCurrentData] = useState([]);
   const [currentColor, setCurrentColor] = useState("#006CC2");
+  const [currentDataName, setCurrentDataName] = useState("organik");
   const [latestTrashData, setLatestTrashData] = useState({});
   const [update, setUpdate] = useState("");
 
@@ -47,12 +52,26 @@ export default function Home() {
     "-bottom-0",
   ];
 
+  const tempBgColor = temp < 30 ? "#006CC2" : temp > 50 ? "#FF6C75" : "#FFB215";
   const tempData = {
     datasets: [
       {
         label: "Suhu",
         data: [temp, 100 - temp],
-        backgroundColor: ["#006CC2", "#ffffff"],
+        backgroundColor: [tempBgColor, "#ffffff"],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const humidBgColor =
+    humid < 30 ? "#006CC2" : humid > 50 ? "#FF6C75" : "#FFB215";
+  const humidData = {
+    datasets: [
+      {
+        label: "Kelembaban",
+        data: [humid, 100 - humid],
+        backgroundColor: [humidBgColor, "#ffffff"],
         borderWidth: 1,
       },
     ],
@@ -87,6 +106,7 @@ export default function Home() {
 
         setLatestTrashData(latestTrashDataRes);
         setTemp(latestTrashDataRes.organicData.temp);
+        setHumid(latestTrashDataRes.organicData.humidity);
 
         setNotifData(notifDataRes);
 
@@ -145,8 +165,14 @@ export default function Home() {
     return (
       <main className="flex w-screen h-screen bg-neutral-200">
         <div className="m-auto justify-center text-center space-y-8">
-          <Image className="scale-50 lg:scale-100 -my-16 lg:m-0" src={loading} alt="loading" />
-          <p className="text-gray-900 text-base lg:text-lg font-semibold">memuat data ...</p>
+          <Image
+            className="scale-50 lg:scale-100 -my-16 lg:m-0"
+            src={loading}
+            alt="loading"
+          />
+          <p className="text-gray-900 text-base lg:text-lg font-semibold">
+            memuat data ...
+          </p>
         </div>
       </main>
     );
@@ -207,7 +233,7 @@ export default function Home() {
         <div className="flex w-max gap-8 lg:gap-16 lg:pt-16 lg:scale-100 scale-[.6] -mb-8 lg:mb-0">
           <div
             onClick={() => {
-              setCurrentData(trashData.organicData), setCurrentColor("#006CC2");
+              setCurrentData(trashData.organicData), setCurrentColor("#006CC2"), setCurrentDataName("Organik");
             }}
           >
             <TrashBin
@@ -215,13 +241,13 @@ export default function Home() {
               height={
                 levelHeight[firstDigit(latestTrashData.organicData?.level || 0)]
               }
-              trashType="organik"
+              trashType="Organik"
               level={latestTrashData.organicData?.level}
             />
           </div>
           <div
             onClick={() => {
-              setCurrentData(trashData.plasticData), setCurrentColor("#FFB215");
+              setCurrentData(trashData.plasticData), setCurrentColor("#FFB215"), setCurrentDataName("Plastik");
             }}
           >
             <TrashBin
@@ -229,13 +255,13 @@ export default function Home() {
               height={
                 levelHeight[firstDigit(latestTrashData.plasticData?.level || 0)]
               }
-              trashType="plastik"
+              trashType="Plastik"
               level={latestTrashData.plasticData?.level}
             />
           </div>
           <div
             onClick={() => {
-              setCurrentData(trashData.paperData), setCurrentColor("#FF6C75");
+              setCurrentData(trashData.paperData), setCurrentColor("#FF6C75"), setCurrentDataName("Kertas");
             }}
           >
             <TrashBin
@@ -243,20 +269,32 @@ export default function Home() {
               height={
                 levelHeight[firstDigit(latestTrashData.paperData?.level || 0)]
               }
-              trashType="kertas"
+              trashType="Kertas"
               level={latestTrashData.paperData?.level}
             />
           </div>
         </div>
 
         {/* Temp and Total Trash Section */}
-        <div className="flex flex-col lg:flex-row lg:w-1/3 justify-between items-center pt-4 gap-6 lg:gap-0">
-          <div className="w-14 h-14 lg:w-20 lg:h-20 flex items-center justify-center gap-2">
-            <Doughnut data={tempData} />
-            <p className="text-lg lg:text-2xl font-semibold">{temp > 100 ? 0 : temp}°C</p>
+        <div className="flex flex-col lg:flex-row lg:w-2/5 justify-between items-center pt-4 lg:gap-0">
+          <div className="flex gap-24">
+            <div className="w-16 h-16 lg:w-20 lg:h-20 flex items-center justify-center gap-2">
+              <Doughnut data={tempData} />
+              <p className="text-lg lg:text-2xl font-semibold">
+                (🌡️) {temp > 100 ? 0 : temp}°C
+              </p>
+            </div>
+            <div className="w-16 h-16 lg:w-20 lg:h-20 flex items-center justify-center gap-2">
+              <Doughnut data={humidData} />
+              <p className="text-lg lg:text-2xl font-semibold">
+                (💧) {humid > 100 ? 0 : humid}%
+              </p>
+            </div>
           </div>
           <div className="p-4 h-max bg-white rounded-lg drop-shadow-md flex flex-col justify-center">
-            <p className="text-base lg:text-xl font-semibold">Sampah Masuk : {trashCount}</p>
+            <p className="text-base lg:text-xl font-semibold">
+              Sampah Masuk : {trashCount}
+            </p>
             <p className="text-xs font-light">
               <span className="text-red-600">*</span>dalam 1 jam terakhir
             </p>
@@ -266,11 +304,11 @@ export default function Home() {
         {/* Chart Section */}
         <div className="flex flex-col lg:flex-row lg:w-2/3 justify-center gap-8 pt-8">
           <div className="lg:w-1/2 lg:h-72 flex justify-center bg-white rounded-lg p-4">
-            <LineChart color={currentColor} sensorData={currentData} />
+            <LineChart color={currentColor} sensorData={currentData} dataset={currentDataName}/>
           </div>
           <div className="lg:w-1/2 lg:h-72 flex justify-center bg-white rounded-lg p-4">
             {currentData == trashData.organicData ? (
-              <AreaChart sensorData={currentData} />
+              <AreaChart sensorData={currentData} dataset={currentDataName} />
             ) : null}
           </div>
         </div>
