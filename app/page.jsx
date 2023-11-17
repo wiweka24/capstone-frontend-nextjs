@@ -106,7 +106,7 @@ export default function Home() {
 
         setLatestTrashData(latestTrashDataRes);
         setTemp(latestTrashDataRes.organicData.temp);
-        setHumid(Math.floor(latestTrashDataRes.organicData.humidity));
+        setHumid(latestTrashDataRes.organicData.humidity);
 
         setNotifData(notifDataRes);
 
@@ -287,7 +287,7 @@ export default function Home() {
             <div className="w-16 h-16 lg:w-20 lg:h-20 flex items-center justify-center gap-2">
               <Doughnut data={humidData} />
               <p className="text-lg lg:text-2xl font-semibold">
-                (💧) {humid > 100 ? 0 : humid}%
+                (💧) {Math.floor(humid) > 100 ? 0 : Math.floor(humid)}%
               </p>
             </div>
           </div>
