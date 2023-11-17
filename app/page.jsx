@@ -106,7 +106,7 @@ export default function Home() {
 
         setLatestTrashData(latestTrashDataRes);
         setTemp(latestTrashDataRes.organicData.temp);
-        setHumid(latestTrashDataRes.organicData.humidity);
+        setHumid(Math.floor(latestTrashDataRes.organicData.humidity));
 
         setNotifData(notifDataRes);
 
